@@ -6,8 +6,12 @@
 		<link rel="stylesheet" href="/css/app.css">
 	</head>
 	<body>
-		<div class="container">
+		@include('partials.navbar')
+
+		<div class="container" style="margin-top: 40px;">
 			@yield('content')
 		</div>
+
+		<script src="/js/app.js"></script>
 	</body>
 </html>

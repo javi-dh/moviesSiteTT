@@ -16,6 +16,7 @@
 				@else
 					<b>Género:</b> Sin genero asociado  <br>
 				@endif
+				<a href="/movies/{{ $oneMovie->id }}" class="btn btn-success">ver detalle de la película</a> <br><br>
 			</li>
 		@endforeach
 	</ul>

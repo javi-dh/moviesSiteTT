@@ -1,9 +1,9 @@
 @extends('layout')
 
-@section('title', 'Crea una película')
+@section('title', "Editando $movieToEdit->title")
 
 @section('content')
-	<h2>Formulario para crear películas</h2>
+	<h2>Formulario para editar: {{ $movieToEdit->title }}</h2>
 
 	@if ($errors)
 		@foreach ($errors->all() as $oneError)
@@ -11,18 +11,15 @@
 		@endforeach
 	@endif
 
-	<form action="/movies/store" method="post" enctype="multipart/form-data">
-		{{-- Token de Seguridad --}}
-		{{-- Genera un input de tipo hidden con el token en el value --}}
-		{{-- También se puede así: --}}
-		{{-- {{ csrf_field() }} --}}
+	<form action="/movies/{{ $movieToEdit->id }}" method="post" enctype="multipart/form-data">
 		@csrf
+		{{ method_field('put') }}
 
 		<div class="row">
 			<div class="col-6">
 				<div class="form-group">
 					<label>Título:</label>
-					<input class="form-control" type="text" name="title" value="{{ old('title') }}" placeholder="Ingresá un título wachin">
+					<input class="form-control" type="text" name="title" value="{{ old('title', $movieToEdit->title) }}" placeholder="Ingresá un título wachin">
 					@if ($errors->has('title'))
 						<p style="color: red;">{{ $errors->first('title') }}</p>
 					@endif
@@ -32,7 +29,7 @@
 			<div class="col-6">
 				<div class="form-group">
 					<label>Rating:</label>
-					<input class="form-control" type="text" name="rating" value="{{ old('rating') }}">
+					<input class="form-control" type="text" name="rating" value="{{ old('rating', $movieToEdit->rating) }}">
 					@error ('rating')
 						<p style="color: red;">{{ $errors->first('rating') }}</p>
 					@enderror
@@ -42,21 +39,21 @@
 			<div class="col-6">
 				<div class="form-group">
 					<label>Premios:</label>
-					<input class="form-control" type="text" name="awards">
+					<input class="form-control" type="text" name="awards" value="{{ old('awards', $movieToEdit->awards) }}">
 				</div>
 			</div>
 
 			<div class="col-6">
 				<div class="form-group">
 					<label>Duración:</label>
-					<input class="form-control" type="text" name="length">
+					<input class="form-control" type="text" name="length" value="{{ old('length', $movieToEdit->length) }}">
 				</div>
 			</div>
 
 			<div class="col-6">
 				<div class="form-group">
 					<label>Fecha de estreno:</label>
-					<input class="form-control" type="date" name="release_date">
+					<input class="form-control" type="date" name="release_date" value="{{ $movieToEdit->release_date->format('Y-m-d') }}">
 				</div>
 			</div>
 
@@ -78,7 +75,10 @@
 					<label>Género:</label>
 					<select class="form-control" name="genre_id">
 						@foreach ($genres as $oneGenre)
-							<option value="{{ $oneGenre->id }}"> {{ $oneGenre->name }} </option>
+							<option
+								value="{{ $oneGenre->id }}"
+								{{ $movieToEdit->genre_id == $oneGenre->id ? 'selected' : null }}
+							> {{ $oneGenre->name }} </option>
 						@endforeach
 					</select>
 				</div>
@@ -86,6 +86,6 @@
 
 		</div>
 
-		<button type="submit" class="btn btn-success">Guardar</button>
+		<button type="submit" class="btn btn-success">Actualizar</button>
 	</form>
 	@endsection

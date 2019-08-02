@@ -14,5 +14,9 @@
 Route::get('/movies', 'MoviesController@index');
 Route::get('/movies/create', 'MoviesController@create');
 Route::post('/movies/store', 'MoviesController@store');
+Route::get('/movies/{id}', 'MoviesController@show');
+Route::delete('/movies/{id}', 'MoviesController@destroy');
+Route::get('/movies/edit/{id}', 'MoviesController@edit');
+Route::put('/movies/{id}', 'MoviesController@update');
 
 Route::get('/genres', 'GenresController@mostrarTodos');

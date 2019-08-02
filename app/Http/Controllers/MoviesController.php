@@ -42,13 +42,15 @@ class MoviesController extends Controller
 			// Validación de Campos
 			$request->validate([
 				'title' => 'required | string',
-				'rating' => 'required | numeric | between:0,10'
+				'rating' => 'required | numeric | between:0,10',
+				'poster' => 'required | image', // image = .jpg | .jpeg | .png | .svg | .bmp | .gif
 			], [
 				// 'required' => 'El campo :attribute es obligatorio',
 				'title.required' => 'El título es obligatorio',
 				'rating.required' => 'El rating es obligatorio',
 				'rating.numeric' => 'El rating debe contener solo números',
 				'rating.between' => 'El rating debe contener un número entre 0 y 10',
+				'poster.required' => 'La imagen es obligatoria',
 			]);
 
 			// Request es el famoso $_POST, con un montón de cosas más
@@ -64,8 +66,22 @@ class MoviesController extends Controller
 			// 	'genre_id' => $request->input('genre_id'),
 			// ]);
 
-			// Forma de guardar #2
-			Movie::create($request->all());
+			// Forma de guardar #2 - create() guarda en DB y retorna el objeto que acabamos de guardar
+ 			$movieSaved = Movie::create($request->all());
+
+			// Pedimos el campo que tiene la imagen
+			$poster = $request->file('poster');
+
+			// Armamos un nombre para la imagen
+			$nombreImagen = uniqid('img-') . '.' . $poster->extension();
+
+			// Subir la imagen a la carpeta final
+			$poster->storePubliclyAs('public/posters', $nombreImagen);
+			// Recordar que la imagen se sube en storage/app/public/posters
+
+			// Después de subir la imagen, vamos a asociarle a la columna poster de la película recién creada, el nombre de la imagen que subimos
+			$movieSaved->poster = $nombreImagen;
+			$movieSaved->save();
 
 			// Forma de guardar #3 (recomendado para usar en el update)
 			// $movieToSave = new Movie;
@@ -89,7 +105,8 @@ class MoviesController extends Controller
      */
     public function show($id)
     {
-        //
+      $movieToShow = Movie::find($id);
+			return view('movies-show', compact('movieToShow'));
     }
 
     /**
@@ -100,7 +117,9 @@ class MoviesController extends Controller
      */
     public function edit($id)
     {
-        //
+      $movieToEdit = Movie::find($id);
+			$genres = Genre::orderBy('name')->get();
+			return view('movies-edit-form', compact('movieToEdit', 'genres'));
     }
 
     /**
@@ -112,7 +131,23 @@ class MoviesController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+      $movieToUpdate = Movie::find($id);
+
+			$movieToUpdate->title = $request->input('title');
+			$movieToUpdate->rating = $request->input('rating');
+			$movieToUpdate->awards = $request->input('awards');
+			$movieToUpdate->length = $request->input('length');
+			$movieToUpdate->release_date = $request->input('release_date');
+			$movieToUpdate->genre_id = $request->input('genre_id');
+
+			$poster = $request->file('poster');
+			$nombreImagen = uniqid('img-') . '.' . $poster->extension();
+			$poster->storePubliclyAs('public/posters', $nombreImagen);
+
+			$movieToUpdate->poster = $nombreImagen;
+			$movieToUpdate->save();
+
+			return redirect('/movies');
     }
 
     /**
@@ -123,6 +158,8 @@ class MoviesController extends Controller
      */
     public function destroy($id)
     {
-        //
+      $movieToDelete = Movie::find($id);
+			$movieToDelete->delete();
+			return redirect('/movies');
     }
 }
