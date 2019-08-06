@@ -28,7 +28,7 @@ class RegisterController extends Controller
      *
      * @var string
      */
-    protected $redirectTo = '/home';
+    protected $redirectTo = '/movies';
 
     /**
      * Create a new controller instance.
@@ -48,11 +48,16 @@ class RegisterController extends Controller
      */
     protected function validator(array $data)
     {
-        return Validator::make($data, [
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
-            'password' => ['required', 'string', 'min:8', 'confirmed'],
-        ]);
+      return Validator::make($data, [
+        'name' => ['required', 'string', 'max:255'],
+        'email' => ['required', 'string', 'email', 'max:255', 'unique:users'],
+        'password' => ['required', 'string', 'min:8', 'confirmed'],
+        'country' => ['required'],
+      ], [
+				'name.required' => 'El campo nombre es obligatorio',
+				'email.email' => 'El email debe ser un formato válido',
+				'country.required' => 'Por favor elegí un país de la lista',
+			]);
     }
 
     /**
@@ -63,10 +68,11 @@ class RegisterController extends Controller
      */
     protected function create(array $data)
     {
-        return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
-            'password' => Hash::make($data['password']),
-        ]);
+      return User::create([
+        'name' => $data['name'],
+        'email' => $data['email'],
+        'country' => $data['country'],
+        'password' => Hash::make($data['password']),
+      ]);
     }
 }

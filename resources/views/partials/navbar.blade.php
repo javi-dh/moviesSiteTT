@@ -27,8 +27,24 @@
 			</ul>
 
 			<ul class="navbar-nav ml-auto">
-				<li class="nav-item"><a class="nav-link" href="#">Register</a></li>
-				<li class="nav-item"><a class="nav-link" href="#">Login</a></li>
+				@guest
+					<li class="nav-item"><a class="nav-link" href="/register">Register</a></li>
+					<li class="nav-item"><a class="nav-link" href="/login">Login</a></li>
+				@endguest
+				@auth
+					<li class="nav-item dropdown">
+						<a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+							Hola {{ Auth::user()->name }}
+						</a>
+						<div class="dropdown-menu" aria-labelledby="navbarDropdown">
+							<a class="dropdown-item" href="/profile">Profile</a>
+							<form action="/logout" method="post">
+								@csrf
+								<button type="submit" class="dropdown-item">Logout</button>
+							</form>
+						</div>
+					</li>
+				@endauth
 			</ul>
 		</div>
 	</nav>
